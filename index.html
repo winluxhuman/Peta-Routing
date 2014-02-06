@@ -126,7 +126,7 @@
 						markerGroup.clearLayers();
 						var marker = L.popup({autoPan: true});
 						marker.setLatLng(latlng);
-						var content = data.places[0].street;
+						var content = data.places[0].street||"";
 						content+="<br>"+data.places[0].city;
 						content+="<br>"+data.places[0].country;
 						marker.setContent(content);
