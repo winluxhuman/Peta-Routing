@@ -25,7 +25,22 @@
 		html, body, #map {
 			height: 100%;
 		}
-	.navbar {margin: 0px;}
+	.navbar {
+		margin: 0px;
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		z-index: 1000;
+		width: 100%;
+	}
+	.navbar-brand {
+		color: black;
+		font-weight: bold;
+		}
+		
+		#btn-about{
+			margin-top: 10px;
+			}
 	</style>
 	<script>
 		
@@ -36,12 +51,6 @@
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
       <a class="navbar-brand" href="#">Peta</a>
     </div>
 
@@ -49,13 +58,13 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
      <form class="navbar-form navbar-left" role="search">    
       <div class="form-group">
-          <input type="text" id="search-text" class="form-control" placeholder="Search">
+          <input type="text" id="search-text" class="form-control" placeholder="Lokasi yang ingin dicari...">
         </div>
         <button id="search-button" class="btn btn-default">Cari</button>
       </form>
       <ul class="nav navbar-nav navbar-right">
         <li>
-			<button class="btn btn-primary" data-toggle="modal" data-target=".about-dialog"><span class="glyphicon glyphicon-question-sign"> </span></button>
+			<button class="btn btn-primary" id= "btn-about" data-toggle="modal" data-target=".about-dialog"><span class="glyphicon glyphicon-question-sign"> </span></button>
         </li>
       </ul>
     </div><!-- /.navbar-collapse -->
@@ -86,12 +95,13 @@
 	<script>
 		
 		$(function(){
-			var map = L.map('map');
+			var map = L.map('map', {zoomControl: false});
 			var markerGroup= L.layerGroup ();
 			markerGroup.addTo(map);
 			var latlng = L.latLng(-3.328499,114.589203);
 			map.setView (latlng, 5, {animate: true});
-			var marker = null;
+			var control = L.control.zoom({position: "bottomleft"}) 
+			control.addTo(map);
 			 
 			$("#search-button").click(function(e){
 				e.preventDefault();
