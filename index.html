@@ -12,7 +12,7 @@
 	<script src="lib/leaflet-0.7.2/leaflet.js"></script>
 	
 	<link rel="stylesheet" href="lib/bootstrap-3.1.0/css/bootstrap.min.css">
-
+	
 	<link rel="stylesheet" href="lib/bootstrap-3.1.0/css/bootstrap-theme.min.css">
 
 	<script src="lib/bootstrap-3.1.0/js/bootstrap.min.js"></script>
@@ -27,6 +27,9 @@
 		}
 	.navbar {margin: 0px;}
 	</style>
+	<script>
+		
+	</script>
 </head>
 <body>
 	<nav class="navbar navbar-normal" role="navigation">
@@ -44,12 +47,11 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-         
-      <form class="navbar-form navbar-left" role="search">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search">
+     <form class="navbar-form navbar-left" role="search">    
+      <div class="form-group">
+          <input type="text" id="search-text" class="form-control" placeholder="Search">
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button id="search-button" class="btn btn-default">Cari</button>
       </form>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -59,6 +61,7 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
+	<div class="alert alert-danger" id= "error-dialog" style= "display: none"><strong>Maaf, </strong>ada gangguan akses server</div>
 	<div id="map"></div>
 	<div class="modal fade about-dialog">
   <div class="modal-dialog">
@@ -81,7 +84,40 @@
 </div><!-- /.modal -->
 
 	<script>
-		var map = L.map('map');
+		
+		$(function(){
+			var map = L.map('map');
+			var markerGroup= L.layerGroup ();
+			markerGroup.addTo(map);
+			var latlng = L.latLng(-3.328499,114.589203);
+			map.setView (latlng, 5, {animate: true});
+			var marker = null;
+			 
+			$("#search-button").click(function(e){
+				e.preventDefault();
+				$("#search-button") .prop( "disabled", true);
+				$("#error-dialog") .css("display", "none");
+				var url="http://beta.geocoding.cloudmade.com/v3/8ee2a50541944fb9bcedded5165f09d9/api/geo.location.search.2?format=json&source=OSM&enc=UTF-8&limit=10&locale=id&q="+ $("#search-text").val();
+				$.ajax({
+					url: url,
+					dataType: "json"
+				}).error(function(data) {
+					$("#error-dialog") .css("display", "block");
+					$("#search-button") .prop( "disabled", false);
+				}).done(function(data) {
+					$("#search-button") .prop( "disabled", false);
+					console.log (data);
+					if (data && data.places && data.places.length > 0) {
+						var position= data.places[0].position;
+						console.log (position)
+						var latlng = L.latLng(position.lat, position.lon);
+						map.setView (latlng, 12, {animate: true});
+						markerGroup.clearLayers();
+						var marker = L.marker(latlng, {icon: new L.Icon.Default()});
+						marker.addTo(markerGroup);
+					} 
+				});
+			});
 		
 	
 		L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
@@ -107,9 +143,8 @@
 		map.on('locationerror', onLocationError);
 
 		//map.locate({setView: true, zoom: 10, maxZoom: 16});
-		var latlng = L.latLng(-3.328499,114.589203);
-		map.setView (latlng, 5, {animate: true});
 		
+		});
 	</script>
 </body>
 </html>
