@@ -113,8 +113,13 @@
 						var latlng = L.latLng(position.lat, position.lon);
 						map.setView (latlng, 12, {animate: true});
 						markerGroup.clearLayers();
-						var marker = L.marker(latlng, {icon: new L.Icon.Default()});
-						marker.addTo(markerGroup);
+						var marker = L.popup({autoPan: true});
+						marker.setLatLng(latlng);
+						var content = data.places[0].street;
+						content+="<br>"+data.places[0].city;
+						content+="<br>"+data.places[0].country;
+						marker.setContent(content);
+						marker.openOn(map);
 					} 
 				});
 			});
