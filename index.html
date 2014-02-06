@@ -7,6 +7,8 @@
 
 	<link rel="stylesheet" href="lib/leaflet-0.7.2/leaflet.css" />
 
+	<script src="lib/jquery-2.1.0/jquery-2.1.0.min.js"></script>
+	
 	<script src="lib/leaflet-0.7.2/leaflet.js"></script>
 	
 	<link rel="stylesheet" href="lib/bootstrap-3.1.0/css/bootstrap.min.css">
@@ -51,14 +53,33 @@
       </form>
       <ul class="nav navbar-nav navbar-right">
         <li>
-			<span class="glyphicon glyphicon-question-sign"> </span>
+			<button class="btn btn-primary" data-toggle="modal" data-target=".about-dialog"><span class="glyphicon glyphicon-question-sign"> </span></button>
         </li>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 	<div id="map"></div>
-	
+	<div class="modal fade about-dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Peta</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+			<span style= "color: red">geo.</span>Blankon<br/>
+			Author: <strong>Cahaya Maulidian</strong>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 	<script>
 		var map = L.map('map');
 		
