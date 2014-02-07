@@ -42,9 +42,12 @@
 		#btn-about{
 			margin-top: 10px;
 			}
+	.alert {
+		margin-top: 52px;
+		margin-bottom: 0px;
+		}
 	</style>
 	<script>
-		
 	</script>
 </head>
 <body>
@@ -100,7 +103,7 @@
 			var markerGroup= L.layerGroup ();
 			markerGroup.addTo(map);
 			var latlng = L.latLng(-3.328499,114.589203);
-			map.setView (latlng, 5, {animate: true});
+			map.setView (latlng, 4, {animate: true});
 			var control = L.control.zoom({position: "bottomleft"}) 
 			control.addTo(map);
 			 
