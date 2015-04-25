@@ -16,6 +16,10 @@
 	<link rel="stylesheet" href="lib/bootstrap-3.1.0/css/bootstrap-theme.min.css">
 
 	<script src="lib/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+	
+	<script src="lib/toastr-2.1.1/toastr.min.js"></script>
+	
+	<link rel="stylesheet" href="lib/toastr-2.1.1/toastr.min.css">
 
 	<style>
 		body {
@@ -86,8 +90,8 @@
       <div class="modal-body">
         <p>
 			<span style= "color: red">geo.</span>Blankon<br/>
-			Author: <strong>Cahaya Maulidian</strong><br/>
-			Email: <strong>cahaya.maulidian@ui.ac.id</strong>
+			Author	: <strong>Cahaya Maulidian</strong><br/>
+			Email	: <strong>cahaya.maulidian@ui.ac.id</strong>
         </p>
       </div>
       <div class="modal-footer">
@@ -123,10 +127,28 @@
 					$("#search-button") .prop( "disabled", false);
 					console.log (data);
 					if (data && data.length > 0) {
+						toastr["success"]("Lokasi ditemukan!")
+						toastr.options = {
+						"closeButton": false,
+						"debug": false,
+						"newestOnTop": false,
+						"progressBar": false,
+						"positionClass": "toast-top-right",
+						"preventDuplicates": false,
+						"onclick": null,
+						"showDuration": "500",
+						"hideDuration": "1000",
+						"timeOut": "5000",
+						"extendedTimeOut": "1000",
+						"showEasing": "swing",
+						"hideEasing": "linear",
+						"showMethod": "fadeIn",
+						"hideMethod": "fadeOut"
+						}
 						var position= data[0];
 						console.log(position)
 						var latlng = L.latLng(position.lat, position.lon);
-						map.setView (latlng, 12, {animate: true});
+						map.setView (latlng, 16, {animate: true});
 						markerGroup.clearLayers();
 						var marker = L.popup({autoPan: true});
 						marker.setLatLng(latlng);
