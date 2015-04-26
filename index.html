@@ -38,6 +38,9 @@
 		width: 100%;
 		background-color: rgba(200,200,200,0.8);
 	}
+	.perpanjang{
+		width: 400px !important;
+	}
 	.navbar-brand {
 		color: black;
 		font-weight: bold;
@@ -66,7 +69,7 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
      <form class="navbar-form navbar-left" role="search">    
       <div class="form-group">
-          <input type="text" id="search-text" class="form-control" placeholder="Lokasi yang ingin dicari...">
+          <input type="text" id="search-text" class="form-control perpanjang" placeholder="Lokasi yang ingin dicari...">
         </div>
         <button id="search-button" class="btn btn-default">Cari</button>
       </form>
@@ -78,7 +81,6 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
-	<div class="alert alert-danger" id= "error-dialog" style= "display: none"><strong>Maaf, </strong>ada gangguan akses server</div>
 	<div id="map"></div>
 	<div class="modal fade about-dialog">
   <div class="modal-dialog">
@@ -121,7 +123,24 @@
 					url: url,
 					dataType: "json"
 				}).error(function(data) {
-					$("#error-dialog") .css("display", "block");
+					toastr["warning"]("Mohon periksa koneksi Anda", "Galat")
+					toastr.options = {
+					"closeButton": false,
+					"debug": true,
+					"newestOnTop": false,
+					"progressBar": false,
+					"positionClass": "toast-top-right",
+					"preventDuplicates": false,
+					"onclick": null,
+					"showDuration": "300",
+					"hideDuration": "1000",
+					"timeOut": "5000",
+					"extendedTimeOut": "1000",
+					"showEasing": "swing",
+					"hideEasing": "linear",
+					"showMethod": "fadeIn",
+					"hideMethod": "fadeOut"
+					}
 					$("#search-button") .prop( "disabled", false);
 				}).done(function(data) {
 					$("#search-button") .prop( "disabled", false);
@@ -155,11 +174,29 @@
 						var content = data[0].display_name||"";
 						marker.setContent(content);
 						marker.openOn(map);
-					} 
+					} else {
+						toastr["warning"]("Lokasi tidak ditemukan!")
+						toastr.options = {
+						"closeButton": false,
+						"debug": false,
+						"newestOnTop": false,
+						"progressBar": false,
+						"positionClass": "toast-top-right",
+						"preventDuplicates": false,
+						"onclick": null,
+						"showDuration": "300",
+						"hideDuration": "1000",
+						"timeOut": "5000",
+						"extendedTimeOut": "1000",
+						"showEasing": "swing",
+						"hideEasing": "linear",
+						"showMethod": "fadeIn",
+						"hideMethod": "fadeOut"
+						}
+					} 			
 				});
 			});
 		
-	
 		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 			zoom: 5,
 			maxZoom: 18,
