@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Peta</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<link rel="stylesheet" href="lib/leaflet-0.7.3/leaflet.css" />
+
+	<script src="lib/jquery-2.1.3/jquery-2.1.3.min.js"></script>
+	
+	<script src="lib/leaflet-0.7.3/leaflet.js"></script>
+	
+	<script src="lib/leaflet-0.7.3/esri-leaflet.js"></script>
+	
+	<script src="lib/leaflet-0.7.3/leaflet.active-layers.min.js"></script>
+	
+	<script src="lib/leaflet-0.7.3/leaflet.select-layers.min.js"></script>
+	
+	<script src="lib/leaflet-routing-machine-2.3.0/leaflet-routing-machine.js"></script>
+	
+	<link rel="stylesheet" href="lib/leaflet-routing-machine-2.3.0/leaflet-routing-machine.css" />
+	
+	<link rel="stylesheet" href="lib/bootstrap-3.1.0/css/bootstrap.min.css">
+	
+	<link rel="stylesheet" href="lib/bootstrap-3.1.0/css/bootstrap-theme.min.css">
+
+	<script src="lib/bootstrap-3.1.0/js/bootstrap.min.js"></script>
+	
+	<script src="lib/toastr-2.1.1/toastr.min.js"></script>
+	
+	<link rel="stylesheet" href="lib/toastr-2.1.1/toastr.min.css">
+
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		html, body, #map {
+			height: 100%;
+		}
+	.navbar {
+		margin: 0px;
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		z-index: 1000;
+		width: 100%;
+		background-color: rgba(200,200,200,0.8);
+	}
+	.perpanjang{
+		width: 300px !important;
+	}
+	.marginatas{
+		margin-top: 60px !important;
+	}
+	.navbar-brand {
+		color: black;
+		font-weight: bold;
+		}
+		
+		#btn-about{
+			margin-top: 10px;
+			}
+	.alert {
+		margin-top: 52px;
+		margin-bottom: 0px;
+		}
+	.spinner {
+		width: 40px;
+		height: 40px;
+
+		position: relative;
+		margin: 100px auto;
+		}
+
+	.double-bounce1, .double-bounce2 {
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		background-color: #333;
+		opacity: 0.6;
+		position: absolute;
+		top: 0;
+		left: 0;
+  
+		-webkit-animation: bounce 2.0s infinite ease-in-out;
+		animation: bounce 2.0s infinite ease-in-out;
+		}
+
+	.double-bounce2 {
+		-webkit-animation-delay: -1.0s;
+		animation-delay: -1.0s;
+		}
+
+	@-webkit-keyframes bounce {
+		0%, 100% { -webkit-transform: scale(0.0) }
+		50% { -webkit-transform: scale(1.0) }
+		}
+
+	@keyframes bounce {
+	0%, 100% { 
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+		} 50% { 
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+		}
+	}
+	</style>
+	<script>
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-normal" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Peta</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+     <form class="navbar-form navbar-left" role="search">    
+      <div class="form-group">
+          <input type="text" id="search-text" class="form-control perpanjang" placeholder="Lokasi awal...">
+        </div>
+      <form class="navbar-form navbar-right" role="search">    
+      <div class="form-group">
+          <input type="text" id="search-text-akhir" class="form-control perpanjang" placeholder="Lokasi akhir...">
+        </div>
+        <button id="search-button" class="btn btn-default">Cari</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+			<button class="btn btn-primary" id= "btn-about" data-toggle="modal" data-target=".about-dialog"><span class="glyphicon glyphicon-question-sign"> </span></button>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+	<div id="map"></div>
+		<div id="map-spinner" style="display:none;z-index:9999;position:fixed;background:white;opacity:0.5;width:100%;height:100%;top:0">
+			<div style="top:30%;right:50%;opacity:1 !important;position:fixed">
+			<div class="spinner">
+			<div class="double-bounce1"></div>
+			<div class="double-bounce2"></div>
+		</div>
+		</div>
+	</div>
+	<div class="modal fade about-dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Peta</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+			<span style= "color: red">geo.</span>BlankOn Client Application<br/>
+			Author	: <strong>Cahaya Maulidian</strong><br/>
+			Email	: <strong>cahaya.maulidian@ui.ac.id</strong>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+	<script>
+		var router;
+		var routerLoaded = false;
+		var showErrorMessage= function(){
+			$("#map-spinner").fadeOut();
+			$("#search-button") .prop( "disabled", false);
+			toastr["warning"]("Lokasi tidak ditemukan", "Galat")
+						toastr.options = {
+						"closeButton": false,
+						"debug": false,
+						"newestOnTop": false,
+						"progressBar": false,
+						"positionClass": "toast-top-right",
+						"preventDuplicates": false,
+						"onclick": null,
+						"showDuration": "300",
+						"hideDuration": "1000",
+						"timeOut": "5000",
+						"extendedTimeOut": "1000",
+						"showEasing": "swing",
+						"hideEasing": "linear",
+						"showMethod": "fadeIn",
+						"hideMethod": "fadeOut"
+						}
+			}
+		
+		$(function(){
+			
+		var attribution = '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>';
+        
+        var osm = L.tileLayer(
+                'https://data.blankon.id/api/tiles?s={s}&z={z}&x={x}&y={y}'
+                , {attribution: attribution}
+        )
+        var blackAndWhite = L.tileLayer(
+                'http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png'
+                , {attribution: attribution}
+        )
+        
+		var nkri = L.esri.tiledMapLayer('https://data.blankon.id/api/wms', {
+			attribution: 'Peta NKRI - &copy Badan Informasi Geospasial', 
+		})
+        
+        var clouds = L.tileLayer('http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>'
+            , opacity: 0.5
+        })
+        var wind = L.tileLayer('http://{s}.tile.openweathermap.org/map/wind/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>'
+            , opacity: 0.5
+        })
+        var temperature = L.tileLayer('http://{s}.tile.openweathermap.org/map/temp/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>'
+            , opacity: 0.5
+        })
+
+        var map = L.map('map', {
+            center: new L.LatLng(-1.269160, 116.825264), zoomControl: false, zoom: 3, layers: [osm, clouds]
+        });
+
+        var baseMaps = {
+            "OpenStreetMap": osm, "Hitam dan Putih": blackAndWhite, "Peta NKRI": nkri
+        };
+
+        var overlayMaps = {
+            "Awan": clouds,
+            "Angin": wind,
+            "Suhu Udara": temperature
+        };
+        
+       var zoomControl = L.control.zoom({position: 'bottomleft'});
+                map.addControl(zoomControl);
+
+        var controlb = L.control.layers(baseMaps, overlayMaps, {position: "bottomright"})
+        //var controlb = L.control.selectLayers(baseMaps, overlayMaps)
+        controlb.addTo(map);
+			 
+			$("#search-button").click(function(e){
+				e.preventDefault();
+				$("#search-button") .prop( "disabled", true);
+				$("#map-spinner").fadeIn();
+				var url1="http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&accept-language=id-ID&q="+ $("#search-text").val();
+				var url2="http://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&accept-language=id-ID&q="+ $("#search-text-akhir").val();
+				var loc1={}
+				var loc2={}
+				$.ajax({
+					url: url1,
+					dataType: "json"
+				}).error(function(data) {
+					$("#map-spinner").fadeOut();
+					toastr["warning"]("Mohon periksa koneksi Anda", "Galat")
+							toastr.options = {
+								"closeButton": false,
+								"debug": true,
+								"newestOnTop": false,
+								"progressBar": false,
+								"positionClass": "toast-top-right",
+								"preventDuplicates": false,
+								"onclick": null,
+								"showDuration": "300",
+								"hideDuration": "1000",
+								"timeOut": "5000",
+								"extendedTimeOut": "1000",
+								"showEasing": "swing",
+								"hideEasing": "linear",
+								"showMethod": "fadeIn",
+								"hideMethod": "fadeOut"
+							}
+					$("#search-button") .prop( "disabled", false);
+				}).done(function(data) {
+					console.log (data);
+					if (data && data.length > 0) {
+						var latlng = L.latLng(-3.328499,114.589203);
+						map.setView (latlng, 4, {animate: false});
+						var position= data[0];
+						loc1 = L.latLng(position.lat, position.lon);
+						console.log(loc1);
+						$.ajax({
+						url: url2,
+						dataType: "json"
+						}).error(function(data) {
+							$("#map-spinner").fadeOut();
+							toastr["warning"]("Mohon periksa koneksi Anda", "Galat")
+							toastr.options = {
+								"closeButton": false,
+								"debug": true,
+								"newestOnTop": false,
+								"progressBar": false,
+								"positionClass": "toast-top-right",
+								"preventDuplicates": false,
+								"onclick": null,
+								"showDuration": "300",
+								"hideDuration": "1000",
+								"timeOut": "5000",
+								"extendedTimeOut": "1000",
+								"showEasing": "swing",
+								"hideEasing": "linear",
+								"showMethod": "fadeIn",
+								"hideMethod": "fadeOut"
+							}
+							$("#search-button") .prop( "disabled", false);
+						}).done(function(data) {
+							$("#map-spinner").fadeOut();
+							$("#search-button") .prop( "disabled", false);
+							if (data && data.length > 0) {
+								var position= data[0];
+								loc2 = L.latLng(position.lat, position.lon);
+								console.log(loc2);
+								
+							
+								//L.Routing.control({waypoints: []}).addTo(map)
+								//var route=L.layerGroup([tiles]);
+								router = L.Routing.control({
+									waypoints: [
+										L.latLng(loc1.lat, loc1.lng),
+										L.latLng(loc2.lat, loc2.lng)
+										],
+									routeWhileDragging: true
+								}).addTo(map);
+								routerLoaded = false;
+								
+								
+								//console.log(JSON.stringify(L));
+							
+							} else {
+								showErrorMessage();
+							}
+						});
+					} else {
+						showErrorMessage();
+					} 			
+				});
+			});
+			
+		function onLocationFound(e) {
+			var radius = e.accuracy / 2;
+
+			L.marker(e.latlng).addTo(map)
+				.bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+			L.circle(e.latlng, radius).addTo(map);
+		}
+
+		function onLocationError(e) {
+			alert(e.message);
+		}
+
+		map.on('locationfound', onLocationFound);
+		map.on('locationerror', onLocationError);
+
+		//map.locate({setView: true, zoom: 10, maxZoom: 16});
+		
+		});
+	</script>
+</body>
+</html>
+
